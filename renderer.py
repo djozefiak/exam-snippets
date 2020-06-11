@@ -15,10 +15,10 @@ class CellRenderer(FPDF):
 		self.cell_counter = 0
 		self.total_cell_counter = 0
 
-	def set_style(self, style):
-		self.set_font(family="Arial", style=style, size=10)
+	def set_style(self, style, size=10):
+		self.set_font(family="Arial", style=style, size=size)
 
-	def render_cell(self):
+	def render_cell(self, first_name, last_name, pin, comment):
 		if self.total_cell_counter >= self.total_cells:
 			raise RuntimeError(f"renderer exhausted, maximum cell count of {self.total_cells} reached")
 
@@ -31,22 +31,26 @@ class CellRenderer(FPDF):
 		self.set_style("B")
 		self.cell(w=SUB_CELL_WIDTH_A, h=SUB_CELL_HEIGHT, txt="Nachname:", align="L", ln=0) # move next position to the right of the cell
 		self.set_style("")
-		self.cell(w=SUB_CELL_WIDTH_B, h=SUB_CELL_HEIGHT, txt="Mustermann", align="L", ln=2) # move next position below
+		if len(last_name) >= 22:
+			self.set_style("", 8)
+		self.cell(w=SUB_CELL_WIDTH_B, h=SUB_CELL_HEIGHT, txt=last_name, align="L", ln=2) # move next position below
 		self.x = x # restore x coordinate to draw next cell on same width as the first cell
 		
 		self.set_style("B")
 		self.cell(w=SUB_CELL_WIDTH_A, h=SUB_CELL_HEIGHT, txt="Vorname:", align="L", ln=0)
 		self.set_style("")
-		self.cell(w=SUB_CELL_WIDTH_B, h=SUB_CELL_HEIGHT, txt="Max", align="L", ln=2)
+		if len(first_name) >= 22:
+			self.set_style("", 8)
+		self.cell(w=SUB_CELL_WIDTH_B, h=SUB_CELL_HEIGHT, txt=first_name, align="L", ln=2)
 		self.x = x
 		
 		self.set_style("B")
 		self.cell(w=SUB_CELL_WIDTH_A, h=SUB_CELL_HEIGHT, txt="PIN:", align="L", ln=0)
 		self.set_style("")
-		self.cell(w=SUB_CELL_WIDTH_B, h=SUB_CELL_HEIGHT, txt="1234", align="L", ln=2)
+		self.cell(w=SUB_CELL_WIDTH_B, h=SUB_CELL_HEIGHT, txt=pin, align="L", ln=2)
 		self.x = x
 
-		self.cell(w=CELL_WIDTH, h=SUB_CELL_HEIGHT, txt="Viel Erfolg bei der Klausur!", align="C", ln=0)
+		self.cell(w=CELL_WIDTH, h=SUB_CELL_HEIGHT, txt=comment, align="C", ln=0)
 		
 		if self.cell_counter == 0:
 			# draw current page when drawing the first cell of the page
